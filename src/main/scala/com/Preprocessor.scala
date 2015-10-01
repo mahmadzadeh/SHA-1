@@ -9,11 +9,10 @@ class Preprocessor {
 
         @tailrec
         def zeroPaddedToMultipleOf64Bytes(bytes: Buffer[Byte]): Buffer[Byte] = {
-            if ((bytes.length + 8) % 64 == 0) {
+            if ((bytes.length + 8) % 64 == 0)
                 bytes;
-            } else {
+            else
                 zeroPaddedToMultipleOf64Bytes(bytes += 0x0)
-            }
         }
 
         zeroPaddedToMultipleOf64Bytes(bytes += 0x1 )
