@@ -11,6 +11,7 @@ import scala.collection.mutable.Buffer
 class PreprocessorTest extends FunSuite {
 
     val preprocessor= new Preprocessor()
+
     val messageSizeInBytes = 8
 
     test("given message m of size different length then pad returns padded msg to the correct length") {
@@ -48,9 +49,56 @@ class PreprocessorTest extends FunSuite {
         assertPaddedMsgSize(paddedMsg)
     }
 
+    test("given message m of length L then appendMsgLengthToPaddedMsg adds the message length to the end of byte array") {
+        val b = bytesBufferForMessage( createStringOfLength(1, "0") )
+        val msgLenLong = b.length.toLong
+        val paddedMsg = preprocessor.pad(b)
+
+        assertPaddedMsgSize(paddedMsg)
+
+        val paddedMessageWithLength= preprocessor.appendMessageLengthToPaddedMessage( msgLenLong, paddedMsg)
+
+        assertPaddedMsgLength(paddedMessageWithLength, msgLenLong)
+    }
+
+    test("given a single character as message then countOf64ByteChunks returns 1 ") {
+        val b = bytesBufferForMessage( createStringOfLength(1, "0") )
+        val msgLenLong = b.length.toLong
+
+        val paddedMessageWithLength= preprocessor.appendMessageLengthToPaddedMessage( msgLenLong, preprocessor.pad(b))
+
+        assertResult(1) {
+            preprocessor.countOf64ByteChunks(paddedMessageWithLength)
+        }
+    }
+
+    // msg : 0......0 (56 bytes)
+    // msg: msg + 1 = 0 .....0 1 (57 bytes)
+    // msg + padding + 8 bytes (size ) = 128 bytes
+    test("given a 56 character as message then countOf64ByteChunks returns 1") {
+        val b = bytesBufferForMessage( createStringOfLength(56, "0") )
+        val msgLenLong = b.length.toLong
+
+        val padded = preprocessor.pad(b)
+
+        val paddedMessage = preprocessor.appendMessageLengthToPaddedMessage(msgLenLong, padded)
+
+        val paddedMessageWithLength= paddedMessage
+
+        assertResult(2) {
+            preprocessor.countOf64ByteChunks(paddedMessageWithLength)
+        }
+    }
+
     def assertPaddedMsgSize(paddedMsg: mutable.Buffer[Byte]): Unit = {
         assertResult(0) {
             (paddedMsg.size + messageSizeInBytes) % 64
+        }
+    }
+
+    def assertPaddedMsgLength(paddedMsg: mutable.Buffer[Byte] , msgLgn: Long): Unit = {
+        assertResult(0) {
+            (paddedMsg.size) % 64
         }
     }
 

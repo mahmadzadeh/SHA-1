@@ -3,6 +3,7 @@ package com
 import java.io.ByteArrayInputStream
 import java.nio.charset.Charset
 
+import com.BinaryConverter.{toByteArray, toByteBuffer}
 import org.scalatest.FunSuite
 
 class BinaryConverterTest extends FunSuite {
@@ -11,13 +12,19 @@ class BinaryConverterTest extends FunSuite {
 
     test("given a string of of byte then toByteArray returns array of bytes representing that string") {
         assertResult(1) {
-            BinaryConverter.toByteArray("a").size
+            toByteArray("a").size
         }
     }
 
     test("given a multi-byte char then toByteArray returns array of bytes representing that string") {
         assertResult(2) {
-            BinaryConverter.toByteArray("ð").size
+            toByteArray("ð").size
         }
+    }
+
+    test("given a multi-byte char then toByteBuffer returns buffer of bytes representing that string") {
+        val mutilByteString= "чытрш"
+
+        assert(toByteBuffer(mutilByteString).size > mutilByteString.length)
     }
 }

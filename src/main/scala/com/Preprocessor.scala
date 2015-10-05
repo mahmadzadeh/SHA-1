@@ -1,6 +1,9 @@
 package com
 
+import java.io.{DataOutputStream, ByteArrayOutputStream}
+
 import scala.annotation.tailrec
+import scala.collection.mutable
 import scala.collection.mutable.Buffer
 
 
@@ -17,4 +20,18 @@ class Preprocessor {
 
         zeroPaddedToMultipleOf64Bytes(bytes += 0x1 )
     }
+
+    def appendMessageLengthToPaddedMessage( msgLeng: Long , paddedMsg: Buffer[Byte]) : Buffer[Byte] = paddedMsg ++ getBytes(msgLeng)
+
+    private def getBytes(long: Long): Buffer[Byte] = {
+        val byteArrayOutputStream = new ByteArrayOutputStream()
+        val os = new DataOutputStream(byteArrayOutputStream)
+        os.writeLong(long)
+
+        os.close()
+
+        byteArrayOutputStream.toByteArray.toBuffer
+    }
+
+    def countOf64ByteChunks(bytes: mutable.Buffer[Byte]): Long  = bytes.length / 64
 }
