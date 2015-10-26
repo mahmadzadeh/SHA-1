@@ -1,7 +1,7 @@
 package com
 
-import java.io.ByteArrayInputStream
 import java.nio.charset.Charset
+
 import scala.collection.mutable.Buffer
 
 object BinaryConverter {

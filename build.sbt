@@ -6,7 +6,8 @@ resolvers += "repo.codahale.com" at "http://repo.codahale.com"
 
 libraryDependencies ++= Seq(
     "log4j"                         %   "log4j"                  % "1.2.16",
-    "com.github.scala-incubator.io" %%   "scala-io-file"         % "0.4.2"
+    "com.github.scala-incubator.io" %%   "scala-io-file"         % "0.4.2",
+    "commons-codec"                 %    "commons-codec"         % "1.9"
 )
 
 

@@ -1,3 +1,4 @@
+
 package com
 
 import org.scalatest.FunSuite
@@ -9,18 +10,9 @@ class SHA1UtilityTest extends FunSuite {
 
 
     test("given from ByteBuffer then Copy() will copy from source into destination") {
+        val sizeInBytes: Int = 64
 
-        val byteArray = ("1" * 64).getBytes("UTF-8")
-
-        assertResult(64) {
-            byteArray.size
-        }
-
-        val source  = JavaByteBuffer.allocate(64).put(byteArray)
-
-        assertResult(64){
-            source.limit()
-        }
+        val source: JavaByteBuffer = getByteBufferOfSize(sizeInBytes)
 
         val result = SHA1Utility.copyInto320ByteBuffer(source)
 
@@ -30,26 +22,16 @@ class SHA1UtilityTest extends FunSuite {
     }
 
     test("given from ByteBuffer then fillUpTo320Bytes() will fill the rest of the buffer up to 320th byte") {
+        val sizeInBytes: Int = 64
 
-        val byteArray = ("1" * 64).getBytes("UTF-8")
+        val source = getByteBufferOfSize(sizeInBytes)
 
-        assertResult(64) {
-            byteArray.size
-        }
-
-        val source  = JavaByteBuffer.allocate(64).put(byteArray)
-
-        assertResult(64){
-            source.limit()
-        }
-
-        val result = SHA1Utility.copyInto320ByteBuffer(source)
-
-        val result2 = SHA1Utility.fillUpTo320Bytes(result)
+        val result2 = SHA1Utility.fillUpTo320Bytes(SHA1Utility.copyInto320ByteBuffer(source))
 
         assertResult(320) {
             result2.position()
         }
+
         assertResult(320) {
             result2.limit()
         }
@@ -71,9 +53,21 @@ class SHA1UtilityTest extends FunSuite {
 
         b1.rewind()
         b2.rewind()
-
     }
 
 
+    def getByteBufferOfSize(sizeInBytes: Int): JavaByteBuffer = {
+        val byteArray = ("1" * sizeInBytes).getBytes("UTF-8")
 
+        assertResult(sizeInBytes) {
+            byteArray.size
+        }
+
+        val source = JavaByteBuffer.allocate(sizeInBytes).put(byteArray)
+
+        assertResult(sizeInBytes) {
+            source.limit()
+        }
+        source
+    }
 }
